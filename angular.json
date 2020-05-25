@@ -123,6 +123,10 @@
           }
         }
       }
-    }},
-  "defaultProject": "dnp-associates"
+    }
+  },
+  "defaultProject": "dnp-associates",
+  "cli": {
+    "analytics": false
+  }
 }

@@ -1,0 +1,55 @@
+.data-overview{
+
+    height: 20rem;
+}
+
+::ng-deep svg{
+    background: rgba(240,240,240,0.1);
+}
+
+::ng-deep .grid.line line{
+    stroke:#fff;
+    stroke-opacity: 0.3;
+    stroke-width: 1px;
+    
+    stroke-dasharray: 500;
+    stroke-dashoffset: 500;
+    animation: dash 1s linear forwards;
+}
+
+
+// ::ng-deep line {
+//     stroke-dasharray: 1000;
+//     stroke-dashoffset: 1000;
+//     animation: dash 1s linear forwards;
+//   }
+  
+@keyframes  dash {
+    to {
+    stroke-dasharray: 0;
+      stroke-dashoffset: 0;
+    }
+  }
+
+::ng-deep .point{
+    stroke: rgba(240,240,240,0.7);
+    fill: none;
+}
+
+
+
+::ng-deep .point[point-fill="true"]{
+    stroke: rgba(240,240,240,0.7);
+    fill: rgba(240,240,240,0.7);
+}
+
+::ng-deep .connector[group="blueGroup"],
+::ng-deep .point[point-fill="true"][group="blueGroup"]{
+    stroke: #1c6ab3b3;
+    fill: #1c6ab3b3;
+}
+
+::ng-deep .connector{
+    stroke: rgba(240,240,240,0.7);
+    stroke-width: 2px;
+}

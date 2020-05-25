@@ -1,0 +1,63 @@
+.some-class {
+    background-size: cover !important;
+    background: no-repeat;
+    height: 120vh;
+    width: 100%;
+  }
+
+::ng-deep .some-class > div {
+    background-size: cover;
+    padding: 25vh 0;
+}
+
+
+::ng-deep .some-class > div:focus {
+    background-size: cover;
+    transform: scale(1.2);
+}
+
+
+
+.sampleDiv{
+    padding: 5rem;
+    background: white;
+    opacity: 0.5;
+    font-size: 2rem;
+}
+
+.data-play{
+    padding-top: 10vh;
+    height: 50vh;
+    width: 100vw;
+    background: rgba(215, 215, 215, 0.3) !important;
+}
+
+::ng-deep use[fill] {
+    fill: #999 !important;
+    fill-opacity: 0.5;
+    stroke: #999;
+}
+
+
+::ng-deep g:hover > use[fill]{
+    fill: #ff0 !important;
+    transition: fill 0.5s ease-in;
+ 
+}
+
+  ::ng-deep use[stroke] {
+    stroke: none;
+  }
+
+::ng-deep path {
+    fill: #ddd;
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 1000;
+    animation: dash 5s linear forwards;
+  }
+  
+@keyframes   dash {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
