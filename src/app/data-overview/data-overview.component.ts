@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import {selection, select, event as d3Event} from "d3-selection";
+import {selection, select, event as d3Event, selectorAll} from "d3-selection";
 import "d3-selection-multi";
-import { fromEvent } from 'rxjs';
+import { fromEvent, timer } from 'rxjs';
 import { filter, tap } from 'rxjs/operators';
+import { easeBounce, easeBounceIn } from 'd3';
 @Component({
   selector: 'app-data-overview',
   templateUrl: './data-overview.component.html',
@@ -12,7 +13,8 @@ import { filter, tap } from 'rxjs/operators';
 export class DataOverviewComponent implements OnInit {
   public config = {
     id: '#container',
-    grid: { width: 50, height: 50},
+    grid: { rows: 6, cols: 10, width: 50, height: 50},
+    annimation: [2000,3000,5000],
     points: {
       radius: 10,  
       list:[
@@ -20,8 +22,8 @@ export class DataOverviewComponent implements OnInit {
         {id: 2, row:5, col:6, fill:true, group: 'blueGroup', connectedTo:[5,6]},
         {id: 3, row:3, col:2, connectedTo:[]},
         {id: 4, row:0, col:5, connectedTo:[]},
-        {id: 5, row:1, col:5, fill:true, color: 'blueGroup'},
-        {id: 6, row:1, col:7, fill:true, color: 'blueGroup'},
+        {id: 5, row:1, col:5, fill:true, group: 'blueGroup'},
+        {id: 6, row:1, col:7, fill:true, group: 'blueGroup'},
         {id: 7, row:2, col:6, fill:true, connectedTo:[]},
         {id: 8, row:4, col:3, fill:true, connectedTo:[11,13]},
         {id: 9, row:5, col:4, connectedTo:[]},
@@ -44,6 +46,11 @@ export class DataOverviewComponent implements OnInit {
   makeViz(_config: any){
     const container = select(_config.id);
     let {offsetHeight:height, offsetWidth:width} = container['_groups'][0][0];
+    
+    _config.grid.height = Math.floor(height/_config.grid.rows);
+    _config.grid.width = Math.floor(width/_config.grid.cols);
+    _config.points.radius = Math.min(_config.grid.height,_config.grid.width) / 4;
+
     height = Math.floor(height / _config.grid.height) * _config.grid.height;
     width = Math.floor(width / _config.grid.width) * _config.grid.width;
 
@@ -65,19 +72,22 @@ export class DataOverviewComponent implements OnInit {
       this.makeGridLine(svg,grid, height,width);
       this.makePoints(svg,grid,_config);
 
-      const keyDowns = fromEvent(document, 'keydown');
-      let keyPresses = keyDowns.pipe(
-        tap(console.log),
-        filter((e: KeyboardEvent) => e.key === 'ArrowRight' || e.key === 'ArrowLeft'),
-        tap(e=>{
-          if(e.key === 'ArrowRight') this.playAnimation(svg,_config)
-          if(e.key === 'ArrowLeft') this.playAnimation(svg,_config, -1)
-        })
-      ).subscribe();
+      timer(this.config.annimation[1])
+        .pipe(
+          tap(()=>{
+            this.playAnimation(svg,_config);
+          })).subscribe();
+
+      // const keyDowns = fromEvent(document, 'keydown');
+      // let keyPresses = keyDowns.pipe(
+      //   tap(console.log),
+      //   filter((e: KeyboardEvent) => e.key === 'ArrowRight' || e.key === 'ArrowLeft'),
+      //   tap(e=>{
+      //     if(e.key === 'ArrowRight') this.playAnimation(svg,_config);
+      //     if(e.key === 'ArrowLeft') this.playAnimation(svg,_config, -1)
+      //   })
+      // ).subscribe();
       
-      // svg.on('keypress',()=>{
-      //   if(d3Event.keyCode === 13) this.playAnimation(svg, _config);
-      // });
 
       console.log({container, grid, height, width});
   
@@ -137,19 +147,22 @@ export class DataOverviewComponent implements OnInit {
     .duration(200);
   }
 
-  getCordinates(obj){
-    obj.row
-  }
+
 
   playAnimation(svg, _config, direction = 1){
     
     svg.selectAll('.point[fill-attr="true"]')
-      .transition() 
+      .transition()
+      .duration(1000)
+      .ease(easeBounceIn) 
       .attr('point-fill', ()=> direction > 0 ?  'true' : 'false')
       .attr('r',_config.points.radius)
-      .delay((d,i)=>250*i)
-      .duration(2000)
-    this.connectLines(svg,_config);
+      // .delay((d,i)=>250*i)
+      .end()
+      .then(()=>{
+        if(direction > 0) this.connectLines(svg,_config);
+      });
+    
   }
 
   makePoints(svg, grid, _config){
